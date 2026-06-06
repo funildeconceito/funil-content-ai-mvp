@@ -1,65 +1,39 @@
-# Funil Content AI MVP
+[README-GEMINI.md](https://github.com/user-attachments/files/28668337/README-GEMINI.md)
+# Funil Content AI MVP com Gemini
 
-MVP para transformar texto, roteiro, transcrição, vídeo ou áudio em ativos do Funil de Conceito.
+Substitua no GitHub:
 
-## O que faz
-- Dashboard simples
-- Upload de vídeo ou áudio
-- Gerador de Funil Completo
-- Vídeo 1: Descobrir
-- Vídeo 2: Relacionar
-- Vídeo 3: Comprar
-- SEO YouTube: títulos, descrição, tags e capítulos
-- 10 ideias de Shorts
-- Ideia de thumbnail e prompt de imagem
-- 3 anúncios
-- Oferta com headline, produto, bônus e CTA
-- Biblioteca local de projetos
-- Exportação TXT do projeto aberto
+- server.js
+- package.json
 
-## Como rodar localmente
-
-```bash
-npm install
-npm start
-```
-
-Acesse:
-
-```txt
-http://localhost:3000
-```
-
-## Como subir no Render
-
-Build Command:
-
-```bash
-npm install
-```
-
-Start Command:
-
-```bash
-node server.js
-```
-
-## Variáveis de ambiente
-
-Obrigatórias para produção:
+No Render, configure:
 
 ```txt
 ALLOWED_ORIGIN=https://app.funildeconceito.com
+GEMINI_API_KEY=sua_chave_gemini
+GEMINI_MODEL=gemini-1.5-flash
 ```
 
-Opcional para usar IA real:
+Depois faça:
 
 ```txt
-OPENAI_API_KEY=sua_chave_openai
-OPENAI_MODEL=gpt-4o-mini
+Manual Deploy
+Clear build cache & deploy
 ```
 
-Sem `OPENAI_API_KEY`, o app funciona em modo demonstração com um gerador interno.
+Teste:
 
-## Importante
-Este MVP não baixa vídeos de YouTube, Instagram ou TikTok. Ele foi reposicionado como ferramenta de criação de conteúdo e Funil de Conceito a partir de material próprio, autorizado ou texto fornecido pelo usuário.
+```txt
+https://funil-content-ai-mvp.onrender.com/api/health
+```
+
+O certo:
+
+```json
+{
+  "ok": true,
+  "app": "Funil Content AI MVP",
+  "aiProvider": "gemini",
+  "aiConfigured": true
+}
+```
