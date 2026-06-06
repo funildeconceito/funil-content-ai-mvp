@@ -155,7 +155,7 @@ function fallbackGenerate({ title, niche, transcript }) {
 async function aiGenerate(payload) {
   if (!gemini) return fallbackGenerate(payload);
 
-  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
   const model = gemini.getGenerativeModel({
     model: modelName,
     generationConfig: {
