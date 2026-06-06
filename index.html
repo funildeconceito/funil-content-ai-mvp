@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funil Content AI MVP</title>
+  <style>
+    :root{--bg:#07111f;--card:#101d33;--card2:#14243f;--text:#f6f8fb;--muted:#aab7cc;--accent:#39d98a;--accent2:#7aa7ff;--danger:#ff5570;--border:rgba(255,255,255,.12);--shadow:0 24px 70px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top left,#193866 0,#07111f 38%,#050912 100%);color:var(--text);min-height:100vh;padding:22px} .wrap{width:min(1180px,100%);margin:auto}.hero{background:linear-gradient(135deg,rgba(57,217,138,.18),rgba(50,109,255,.13));border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:30px;margin-bottom:18px}.badge{display:inline-flex;padding:8px 12px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:13px;margin-bottom:14px;background:rgba(255,255,255,.04)}h1{margin:0 0 10px;font-size:clamp(32px,5vw,58px);line-height:1}.hero p,p{color:var(--muted);line-height:1.6;margin:0}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}.card{background:rgba(16,29,51,.92);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);padding:20px}.tabs{display:grid;gap:10px}.tab{padding:14px;border-radius:16px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-weight:800;text-align:left}.tab.active{background:var(--accent);color:#06120b}.form{display:grid;gap:12px} label{font-weight:800}input,textarea{width:100%;padding:15px;border-radius:14px;border:1px solid var(--border);background:rgba(0,0,0,.24);color:var(--text);outline:none;font-size:15px}textarea{min-height:160px;resize:vertical}button{border:0;border-radius:16px;padding:15px 16px;background:var(--accent);color:#04110b;cursor:pointer;font-weight:900;font-size:15px}button.secondary{background:#eaf2ff;color:#07111f}button.dark{background:#253958;color:var(--text)}button:disabled{opacity:.55;cursor:wait}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.panel{display:none}.panel.active{display:block}.result{display:grid;gap:14px}.section{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:18px;padding:16px;overflow:auto}.section h3{margin:0 0 10px;color:var(--accent)}.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:18px;padding:16px}.stat b{font-size:28px;display:block}.copy{white-space:pre-wrap;color:#e8eef8;line-height:1.55}.list{display:grid;gap:8px}.item{padding:12px;border:1px solid var(--border);border-radius:14px;background:rgba(0,0,0,.18)}.project{display:flex;gap:10px;align-items:center;justify-content:space-between}.small{font-size:13px;color:var(--muted)}.notice{background:rgba(57,217,138,.08);border:1px solid rgba(57,217,138,.25);border-radius:18px;padding:14px;color:var(--muted);margin-bottom:14px}@media(max-width:900px){.grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="badge">MVP para criadores, YouTube SEO e Funil de Conceito</div>
+      <h1>Funil Content AI</h1>
+      <p>Transforme vídeo, áudio ou texto em um funil completo com 3 vídeos, títulos SEO, descrição, Shorts, thumb, anúncios e oferta.</p>
+    </header>
+
+    <div class="grid">
+      <aside class="card">
+        <div class="tabs">
+          <button class="tab active" data-tab="dashboard">Dashboard</button>
+          <button class="tab" data-tab="gerar">Gerar Funil Completo</button>
+          <button class="tab" data-tab="upload">Upload de Arquivo</button>
+          <button class="tab" data-tab="biblioteca">Biblioteca</button>
+          <button class="tab" data-tab="config">Configuração</button>
+        </div>
+      </aside>
+
+      <main class="card">
+        <section id="dashboard" class="panel active">
+          <div class="mini">
+            <div class="stat"><b id="statProjetos">0</b><span>Projetos</span></div>
+            <div class="stat"><b>3</b><span>Vídeos por funil</span></div>
+            <div class="stat"><b>10</b><span>Shorts por projeto</span></div>
+          </div>
+          <div class="notice">A versão grátis funciona sem chave de IA usando um gerador base. Para qualidade máxima, configure OPENAI_API_KEY no Render.</div>
+          <div class="section"><h3>Fluxo do MVP</h3><div class="copy">1. Eu envio um texto, roteiro ou ideia\n2. O app gera Vídeo 1: Descobrir\n3. Gera Vídeo 2: Relacionar\n4. Gera Vídeo 3: Comprar\n5. Cria SEO YouTube, Shorts, thumb, anúncios e oferta\n6. Salva tudo na biblioteca</div></div>
+        </section>
+
+        <section id="gerar" class="panel">
+          <div class="form">
+            <label>Título ou tema principal</label>
+            <input id="title" placeholder="Ex: Como o Starbucks vende status, não café" />
+            <label>Nicho ou público</label>
+            <input id="niche" placeholder="Ex: marketing digital, criadores, infoprodutores" />
+            <label>Texto base, roteiro, transcrição ou ideia</label>
+            <textarea id="transcript" placeholder="Cole aqui uma transcrição, roteiro, resumo ou ideia do conteúdo..."></textarea>
+            <div class="actions">
+              <button id="generateBtn" onclick="generateAll()">Gerar Funil Completo</button>
+              <button class="secondary" onclick="clearForm()">Limpar</button>
+            </div>
+          </div>
+          <br>
+          <div id="output" class="result"></div>
+        </section>
+
+        <section id="upload" class="panel">
+          <div class="notice">O upload salva o arquivo no servidor. A transcrição automática exige configurar uma API de IA ou módulo de áudio depois.</div>
+          <div class="form">
+            <label>Enviar vídeo ou áudio</label>
+            <input id="file" type="file" accept="video/*,audio/*" />
+            <button onclick="uploadFile()">Enviar arquivo</button>
+          </div>
+          <br>
+          <div id="uploadResult" class="result"></div>
+        </section>
+
+        <section id="biblioteca" class="panel">
+          <div class="actions"><button onclick="loadProjects()">Atualizar biblioteca</button><button class="dark" onclick="exportLast()">Exportar último em TXT</button></div><br>
+          <div id="projects" class="result"></div>
+        </section>
+
+        <section id="config" class="panel">
+          <div class="section"><h3>Configuração no Render</h3><div class="copy">Variáveis recomendadas:\n\nALLOWED_ORIGIN=https://app.funildeconceito.com\nOPENAI_API_KEY=sua_chave_openai\nOPENAI_MODEL=gpt-4o-mini\n\nSem OPENAI_API_KEY, o app usa um gerador base para teste.</div></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script>
+const API_BASE = window.location.origin.includes('localhost') ? '' : 'https://funil-baixador-api.onrender.com';
+let lastProject = null;
+
+function showTab(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(name).classList.add('active');document.querySelector(`[data-tab="${name}"]`).classList.add('active'); if(name==='biblioteca') loadProjects();}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+
+function escapeHtml(str=''){return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
+function block(title, html){return `<div class="section"><h3>${title}</h3>${html}</div>`}
+function list(items=[]){return `<div class="list">${items.map(x=>`<div class="item">${escapeHtml(typeof x==='string'?x:JSON.stringify(x,null,2))}</div>`).join('')}</div>`}
+
+async function generateAll(){
+  const btn=document.getElementById('generateBtn'); const output=document.getElementById('output');
+  const title=document.getElementById('title').value.trim(); const niche=document.getElementById('niche').value.trim(); const transcript=document.getElementById('transcript').value.trim();
+  if(!title && !transcript){output.innerHTML=block('Atenção','<p>Informe pelo menos um título ou texto base.</p>');return;}
+  btn.disabled=true; output.innerHTML=block('Processando','<p>Gerando funil completo...</p>');
+  try{
+    const r=await fetch(`${API_BASE}/api/generate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,niche,transcript})});
+    const data=await r.json(); if(!data.ok) throw new Error(data.message||'Erro ao gerar.');
+    lastProject=data.project; renderProject(data.project); loadProjects(false);
+  }catch(e){output.innerHTML=block('Erro',`<p>${escapeHtml(e.message)}</p>`)}finally{btn.disabled=false;}
+}
+
+function renderProject(project){
+ const o=project.output; const cf=o.conceptFunnel||{}; const seo=o.youtubeSEO||{};
+ document.getElementById('output').innerHTML =
+  block('Resumo',`<div class="copy">${escapeHtml(o.summary||'')}</div>`)+
+  block('Vídeo 1: Descobrir',videoHtml(cf.video1))+
+  block('Vídeo 2: Relacionar',videoHtml(cf.video2))+
+  block('Vídeo 3: Comprar',videoHtml(cf.video3))+
+  block('SEO YouTube',`<b>Títulos:</b>${list(seo.titles||[])}<br><b>Descrição:</b><div class="copy">${escapeHtml(seo.description||'')}</div><br><b>Tags:</b>${list(seo.tags||[])}<br><b>Capítulos:</b>${list(seo.chapters||[])}`)+
+  block('10 Shorts',list((o.shorts||[]).map(s=>`${s.title}\nHook: ${s.hook}\nRoteiro: ${s.script}\nCTA: ${s.cta}`)))+
+  block('Thumbnail',`<div class="copy"><b>Ideia:</b> ${escapeHtml(o.thumbnail?.idea||'')}\n<b>Texto:</b> ${escapeHtml(o.thumbnail?.text||'')}\n<b>Prompt:</b> ${escapeHtml(o.thumbnail?.prompt||'')}</div>`)+
+  block('Anúncios',list((o.ads||[]).map(a=>`${a.platform}: ${a.copy}`)))+
+  block('Oferta',`<div class="copy">Headline: ${escapeHtml(o.offer?.headline||'')}\nProduto: ${escapeHtml(o.offer?.productIdea||'')}\nBônus: ${(o.offer?.bonuses||[]).join(', ')}\nCTA: ${escapeHtml(o.offer?.cta||'')}</div>`);
+}
+function videoHtml(v={}){return `<div class="copy"><b>Título:</b> ${escapeHtml(v.title||'')}\n<b>Hook:</b> ${escapeHtml(v.hook||'')}\n\n<b>Roteiro:</b>\n${escapeHtml(v.script||'')}\n\n<b>CTA:</b> ${escapeHtml(v.cta||'')}</div>`}
+function clearForm(){document.getElementById('title').value='';document.getElementById('niche').value='';document.getElementById('transcript').value='';document.getElementById('output').innerHTML='';}
+
+async function uploadFile(){
+ const file=document.getElementById('file').files[0]; const box=document.getElementById('uploadResult'); if(!file){box.innerHTML=block('Atenção','<p>Escolha um arquivo.</p>');return;}
+ const fd=new FormData(); fd.append('file',file); box.innerHTML=block('Enviando','<p>Upload em andamento...</p>');
+ try{const r=await fetch(`${API_BASE}/api/upload`,{method:'POST',body:fd}); const data=await r.json(); if(!data.ok)throw new Error(data.message||'Erro no upload.'); box.innerHTML=block('Arquivo enviado',`<div class="copy">Nome: ${escapeHtml(data.file.originalName)}\nTamanho: ${data.file.size} bytes\nCaminho: ${data.file.path}</div>`)}catch(e){box.innerHTML=block('Erro',`<p>${escapeHtml(e.message)}</p>`)}
+}
+
+async function loadProjects(render=true){
+ try{const r=await fetch(`${API_BASE}/api/projects`); const data=await r.json(); const ps=data.projects||[]; document.getElementById('statProjetos').textContent=ps.length; if(!render)return; document.getElementById('projects').innerHTML=ps.length?ps.map(p=>`<div class="section project"><div><b>${escapeHtml(p.title)}</b><div class="small">${new Date(p.createdAt).toLocaleString('pt-BR')}</div></div><button class="secondary" onclick='openProject(${JSON.stringify(p).replace(/'/g,"&apos;")})'>Abrir</button></div>`).join(''):'<div class="section">Nenhum projeto salvo ainda.</div>'}catch(e){}
+}
+function openProject(p){lastProject=p;showTab('gerar');renderProject(p)}
+function exportLast(){if(!lastProject){alert('Abra ou gere um projeto primeiro.');return;} const text=JSON.stringify(lastProject,null,2); const blob=new Blob([text],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`funil-content-${lastProject.id}.txt`; a.click();}
+loadProjects(false);
+</script>
+</body>
+</html>
