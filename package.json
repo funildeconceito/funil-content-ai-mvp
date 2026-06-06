@@ -1,7 +1,7 @@
 {
   "name": "funil-content-ai-mvp",
-  "version": "1.1.0",
-  "description": "MVP Funil Content AI usando Gemini para gerar funil de conceito, SEO YouTube e Shorts.",
+  "version": "1.0.0",
+  "description": "MVP Funil Content AI com Gemini para gerar funil de conceito, SEO YouTube e Shorts.",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/generative-ai": "^0.21.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
