@@ -1,0 +1,21 @@
+{
+  "name": "funil-content-ai-mvp",
+  "version": "1.0.0",
+  "description": "MVP Funil Content AI para gerar funil de conceito, SEO YouTube e Shorts a partir de texto ou vídeo.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "nanoid": "^5.0.7",
+    "openai": "^4.56.0"
+  }
+}
