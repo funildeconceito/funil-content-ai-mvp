@@ -6,19 +6,22 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 const DATA_FILE = path.join(__dirname, 'data', 'projects.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+const gemini = process.env.GEMINI_API_KEY
+  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+  : null;
 
 app.use(cors({ origin: ALLOWED_ORIGIN === '*' ? true : ALLOWED_ORIGIN }));
 app.use(express.json({ limit: '2mb' }));
@@ -61,6 +64,25 @@ async function writeProjects(projects) {
 
 function safeText(text = '') {
   return String(text).trim().slice(0, 35000);
+}
+
+function extractJson(text = '') {
+  const cleaned = String(text)
+    .replace(/```json/gi, '')
+    .replace(/```/g, '')
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {}
+
+  const first = cleaned.indexOf('{');
+  const last = cleaned.lastIndexOf('}');
+  if (first !== -1 && last !== -1 && last > first) {
+    return JSON.parse(cleaned.slice(first, last + 1));
+  }
+
+  throw new Error('A IA não retornou um JSON válido.');
 }
 
 function fallbackGenerate({ title, niche, transcript }) {
@@ -131,27 +153,61 @@ function fallbackGenerate({ title, niche, transcript }) {
 }
 
 async function aiGenerate(payload) {
-  if (!openai) return fallbackGenerate(payload);
+  if (!gemini) return fallbackGenerate(payload);
 
-  const prompt = `Você é Sandro Caxias, especialista em Funil de Conceito, YouTube SEO, copywriting e marketing digital. Gere um plano completo em JSON válido, sem markdown, a partir destes dados:\n\nTítulo: ${payload.title}\nNicho: ${payload.niche}\nTranscrição ou texto-base: ${payload.transcript}\n\nO JSON deve ter exatamente estes campos: summary, conceptFunnel com video1 video2 video3, youtubeSEO com titles description tags chapters, shorts com 10 itens, thumbnail, ads com 3 itens, offer. Escreva em português do Brasil, primeira pessoa estratégica quando fizer sentido, tom claro e direto.`;
-
-  const response = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-    messages: [{ role: 'user', content: prompt }],
-    response_format: { type: 'json_object' },
-    temperature: 0.75
+  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const model = gemini.getGenerativeModel({
+    model: modelName,
+    generationConfig: {
+      temperature: 0.75,
+      responseMimeType: 'application/json'
+    }
   });
 
-  return JSON.parse(response.choices[0].message.content);
+  const prompt = `Você é Sandro Caxias, especialista em Funil de Conceito, YouTube SEO, copywriting e marketing digital.
+
+Gere um plano completo em JSON válido, sem markdown, a partir destes dados:
+
+Título: ${payload.title}
+Nicho: ${payload.niche}
+Transcrição ou texto-base: ${payload.transcript}
+
+O JSON deve ter exatamente estes campos: summary, conceptFunnel com video1 video2 video3, youtubeSEO com titles description tags chapters, shorts com exatamente 10 itens, thumbnail, ads com exatamente 3 itens, offer.
+
+Regras:
+- Escreva em português do Brasil.
+- Use linguagem simples, estratégica e direta.
+- Escreva como Sandro Caxias quando fizer sentido.
+- A chamada para ação padrão deve ser: link no primeiro comentário.
+- Retorne somente JSON válido.`;
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.text();
+  return extractJson(text);
 }
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, app: 'Funil Content AI MVP', aiConfigured: Boolean(process.env.OPENAI_API_KEY) });
+  res.json({
+    ok: true,
+    app: 'Funil Content AI MVP',
+    aiProvider: 'gemini',
+    aiConfigured: Boolean(process.env.GEMINI_API_KEY)
+  });
 });
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ ok: false, message: 'Nenhum arquivo enviado.' });
-  res.json({ ok: true, file: { originalName: req.file.originalname, filename: req.file.filename, path: `/uploads/${req.file.filename}`, size: req.file.size, mimetype: req.file.mimetype } });
+
+  res.json({
+    ok: true,
+    file: {
+      originalName: req.file.originalname,
+      filename: req.file.filename,
+      path: `/uploads/${req.file.filename}`,
+      size: req.file.size,
+      mimetype: req.file.mimetype
+    }
+  });
 });
 
 app.post('/api/generate', async (req, res) => {
@@ -160,18 +216,36 @@ app.post('/api/generate', async (req, res) => {
   const transcript = safeText(req.body?.transcript || '');
 
   if (!title && !transcript) {
-    return res.status(400).json({ ok: false, message: 'Informe pelo menos um título ou texto base.' });
+    return res.status(400).json({
+      ok: false,
+      message: 'Informe pelo menos um título ou texto base.'
+    });
   }
 
   try {
     const output = await aiGenerate({ title, niche, transcript });
     const projects = await readProjects();
-    const project = { id: nanoid(10), createdAt: new Date().toISOString(), title: title || 'Projeto sem título', niche, transcript, output };
+
+    const project = {
+      id: nanoid(10),
+      createdAt: new Date().toISOString(),
+      title: title || 'Projeto sem título',
+      niche,
+      transcript,
+      output
+    };
+
     projects.unshift(project);
     await writeProjects(projects.slice(0, 100));
+
     res.json({ ok: true, project });
   } catch (error) {
-    res.status(500).json({ ok: false, message: 'Erro ao gerar o conteúdo.', detail: error.message });
+    console.error(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Erro ao gerar o conteúdo com Gemini.',
+      detail: error.message
+    });
   }
 });
 
@@ -187,4 +261,6 @@ app.delete('/api/projects/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => console.log(`Funil Content AI rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Funil Content AI com Gemini rodando na porta ${PORT}`);
+});
