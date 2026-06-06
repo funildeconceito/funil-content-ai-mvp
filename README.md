@@ -11,7 +11,7 @@ No Render, configure:
 ```txt
 ALLOWED_ORIGIN=https://app.funildeconceito.com
 GEMINI_API_KEY=sua_chave_gemini
-GEMINI_MODEL=gemini-1.5-flash
+GEMINI_MODEL=gemini-2.0-flash
 ```
 
 Depois faça:
