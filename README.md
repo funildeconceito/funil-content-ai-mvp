@@ -1,4 +1,4 @@
-[README-GEMINI.md](https://github.com/user-attachments/files/28671518/README-GEMINI.md)
+[README.md](https://github.com/user-attachments/files/28671518/README-GEMINI.md)
 # Funil Content AI MVP com Gemini
 
 Substitua no GitHub:
